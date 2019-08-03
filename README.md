@@ -14,6 +14,14 @@ This repo follows the folder structure specified in [golang-standards/project-la
 
 [v1.1.0](https://public.cloud.myinfo.gov.sg/edh/edh-tuo-specs.html)
 
+### Keys and Certs
+
+* You should have generated a private and public key-pair
+* Pass the public key to EDH team
+* Put the private key into the **ssl** folder. This will be used to sign the request and decrypt the response
+* EDH team should give you their public cert
+  * Put this into the **ssl** folder. This will be used to verify the response
+
 ### Contributing Your Code
 
 If you would like to contribute to this repo, please open an issue, fork the repo, implement your code and tests and create a PR
