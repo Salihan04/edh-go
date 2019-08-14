@@ -7,42 +7,67 @@ import (
 	"testing"
 )
 
-func TestGetConfigObj(t *testing.T) {
+func TestGetConfig(t *testing.T) {
 	testCases := []struct {
 		name     string
 		filename string
-		expected Config
 	}{
-		{"Valid", "../../configs/config.json", Config{
-			AppClientID:    "STG2-EDH-SELF-TEST",
-			PrivateKeyPath: "./ssl/STG2-EDH-SELF-TEST.pem",
-			PublicCertPath: "./ssl/stg-auth-signing-public.pem",
-			BaseURL:        "https://test.api.edh.gov.sg/gov/v1/entity",
-			Attributes:     "entitytype,basic-profile,addresses,history,financials,capitals,declarations,charges,shareholders,appointments,licences,grants",
-		}},
-		{"NotExist", "notExist.json", Config{}},
-		{"InvalidFormat", "invalid.json", Config{}},
+		{"NotExist", "notExist.json"},
+		{"Valid", "../../configs/config.json"},
+		{"MissingFields", "./test_files/missing_fields.json"},
+		{"InvalidFormat", "./test_files/invalid.json"},
 	}
+
+	expected := getConfigFields(Config{
+		AppClientID:    "app_client_id",
+		PrivateKeyPath: "private_key_path",
+		PublicCertPath: "public_cert_path",
+		BaseURL:        "base_url",
+		Attributes:     "attributes",
+	})
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.name == "Valid" {
-				got := GetConfigObj(tc.filename)
-				if !reflect.DeepEqual(got, tc.expected) {
-					t.Errorf("Got %v, expected %v", got, tc.expected)
+				got := getConfigFields(GetConfig(tc.filename))
+				if !reflect.DeepEqual(got, expected) {
+					t.Errorf("Got %v, expected %v", got, expected)
+				}
+			} else if tc.name == "MissingFields" {
+				got := getConfigFields(GetConfig(tc.filename))
+				if reflect.DeepEqual(got, expected) {
+					t.Errorf("Missing config fields. Got %v, expected %v", got, expected)
 				}
 			} else if os.Getenv("WILL_EXIT") == "1" {
-				GetConfigObj(tc.filename)
+				GetConfig(tc.filename)
 				return
 			}
-			// Test the GetConfigObj function will exit for NotExist and InvalidFormat cases
-			cmd := exec.Command(os.Args[0], "-test.run=TestGetConfigObj/(NotExist|InvalidFormat)")
-			cmd.Env = append(os.Environ(), "WILL_EXIT=1")
-			err := cmd.Run()
-			if e, ok := err.(*exec.ExitError); ok && !e.Success() {
-				return
-			}
-			t.Fatalf("process ran with err %v, want exit status 1", err)
+			// Test the GetConfig function will exit for NotExist and InvalidFormat cases
+			simulateExit(t)
 		})
 	}
+}
+
+func simulateExit(t *testing.T) {
+	cmd := exec.Command(os.Args[0], "-test.run=TestGetConfig/(NotExist|InvalidFormat)")
+	cmd.Env = append(os.Environ(), "WILL_EXIT=1")
+	err := cmd.Run()
+	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+		return
+	}
+	t.Fatalf("process ran with err %v, want exit status 1", err)
+}
+
+func getConfigFields(c Config) []string {
+	var fields []string
+	e := reflect.ValueOf(&c).Elem()
+
+	for i := 0; i < e.NumField(); i++ {
+		// Only append fields with non-empty values
+		if e.Field(i).Interface() != "" {
+			fields = append(fields, e.Type().Field(i).Name)
+		}
+	}
+
+	return fields
 }
