@@ -15,8 +15,8 @@ type Config struct {
 	Attributes     string `json:"attributes"`
 }
 
-// GetConfigObj returns the JSON object in configs/config.json as a Config struct
-func GetConfigObj(filename string) Config {
+// GetConfig returns the JSON object in configs/config.json as a Config struct
+func GetConfig(filename string) Config {
 	var config Config
 
 	byteValue, err := ioutil.ReadFile(filename)
