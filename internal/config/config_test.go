@@ -1,8 +1,6 @@
 package config
 
 import (
-	"os"
-	"os/exec"
 	"reflect"
 	"testing"
 )
@@ -29,33 +27,25 @@ func TestGetConfig(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.name == "Valid" {
-				got := getConfigFields(GetConfig(tc.filename))
+				c, _ := GetConfig(tc.filename)
+				got := getConfigFields(c)
 				if !reflect.DeepEqual(got, expected) {
 					t.Errorf("Got %v, expected %v", got, expected)
 				}
 			} else if tc.name == "MissingFields" {
-				got := getConfigFields(GetConfig(tc.filename))
-				if !reflect.DeepEqual(got, expected) {
-					t.Logf("Missing config fields. Got %v, expected %v", got, expected)
+				c, _ := GetConfig(tc.filename)
+				got := getConfigFields(c)
+				if reflect.DeepEqual(got, expected) {
+					t.Errorf("There are missing config fields. Got %v, expected %v", got, expected)
 				}
-			} else if os.Getenv("WILL_EXIT") == "1" {
-				GetConfig(tc.filename)
-				return
+			} else {
+				_, err := GetConfig(tc.filename)
+				if err == nil {
+					t.Errorf("Expected error to be returned\n")
+				}
 			}
-			// Test the GetConfig function will exit for NotExist and InvalidFormat cases
-			simulateExit(t)
 		})
 	}
-}
-
-func simulateExit(t *testing.T) {
-	cmd := exec.Command(os.Args[0], "-test.run=TestGetConfig/(NotExist|InvalidFormat)")
-	cmd.Env = append(os.Environ(), "WILL_EXIT=1")
-	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
-		return
-	}
-	t.Fatalf("process ran with err %v, want exit status 1", err)
 }
 
 func getConfigFields(c Config) []string {
