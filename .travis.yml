@@ -1,0 +1,29 @@
+# Use the latest ubuntu environment (18.04) available on travis
+dist: xenial
+
+language: go
+
+# You don't need to test on very old versions of the Go compiler. It's the user's
+# responsibility to keep their compiler up to date.
+go:
+  - 1.12.x
+
+# Only clone the most recent commit.
+git:
+  quiet: true
+  depth: 1
+
+# Don't email me the results of the test runs.
+notifications:
+  email: false
+
+before_script:
+  - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+  - go get -u github.com/rakyll/gotest
+
+# script always runs to completion (set +e). If we have linter issues AND a
+# failing test, we want to see both. Configure golangci-lint with a
+# .golangci.yml file at the top level of your repo.
+script:
+  - golangci-lint run -E gosec -E lll -E gocyclo -E goconst      # run a bunch of code checkers/linters in parallel
+  - gotest -v -cover ./...                                       # Run all the tests with the cover option
