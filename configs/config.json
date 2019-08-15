@@ -1,0 +1,7 @@
+{
+  "app_client_id": "STG2-EDH-SELF-TEST",
+  "private_key_path": "./ssl/STG2-EDH-SELF-TEST.pem",
+  "public_cert_path": "./ssl/stg-auth-signing-public.pem",
+  "base_url": "https://test.api.edh.gov.sg/gov/v1/entity",
+  "attributes": "entitytype,basic-profile,addresses,history,financials,capitals,declarations,charges,shareholders,appointments,licences,grants"
+}

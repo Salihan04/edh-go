@@ -12,7 +12,7 @@ This repo follows the folder structure specified in [golang-standards/project-la
 
 ### EDH API Specs
 
-[v1.1.0](https://public.cloud.myinfo.gov.sg/edh/edh-tuo-specs.html)
+[v1.1.1](https://public.cloud.myinfo.gov.sg/edh/edh-tuo-specs.html)
 
 ### Keys and Certs
 
@@ -25,3 +25,19 @@ This repo follows the folder structure specified in [golang-standards/project-la
 ### Contributing Your Code
 
 If you would like to contribute to this repo, please open an issue, fork the repo, implement your code and tests and create a PR
+
+#### Running Tests
+
+This is how tests are run in this repo
+
+```bash
+# Get gotest (for colored output)
+$ go get -u github.com/rakyll/gotest
+
+# Run tests with coverage report
+$ cd <path_to_code>
+$ gotest -v -coverprofile=cover.out
+
+# Show coverage report in browser
+$ go tool cover -html=cover.out
+```
