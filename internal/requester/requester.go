@@ -7,7 +7,9 @@ import (
 	"strings"
 )
 
-func formulateBaseString(httpMethod string, url string, appID string, attributes string, clientID string, nonce string, timestamp int64, txnNo int64) string {
+func formulateBaseString(httpMethod string, url string, appID string,
+	attributes string, clientID string, nonce string,
+	timestamp int64, txnNo int64) string {
 	baseParams := map[string]string{
 		"app_id":           appID,
 		"attributes":       attributes,

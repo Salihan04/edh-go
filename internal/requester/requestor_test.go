@@ -30,13 +30,17 @@ func TestFormulateBaseString(t *testing.T) {
 			"1234567890abcde",
 			123,
 			123,
-			"GET&https://test.api.edh.gov.sg/gov/v1/entity/201800001A&app_id=STG2-EDH-SELF-TEST&attributes=basic-profile,addresses&client_id=STG2-EDH-SELF-TEST&nonce=1234567890abcde&signature_method=RS256&timestamp=123&txn_no=123",
+			"GET&https://test.api.edh.gov.sg/gov/v1/entity/201800001A&" +
+				"app_id=STG2-EDH-SELF-TEST&attributes=basic-profile,addresses&client_id=STG2-EDH-SELF-TEST&" +
+				"nonce=1234567890abcde&signature_method=RS256&timestamp=123&txn_no=123",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := formulateBaseString(tc.httpMethod, tc.url, tc.appID, tc.attributes, tc.clientID, tc.nonce, tc.timestamp, tc.txnNo)
+			got := formulateBaseString(tc.httpMethod, tc.url, tc.appID,
+				tc.attributes, tc.clientID, tc.nonce,
+				tc.timestamp, tc.txnNo)
 			baseStringParts := strings.Split(got, "&")
 
 			httpMethod := baseStringParts[0]
