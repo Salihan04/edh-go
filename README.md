@@ -12,7 +12,7 @@ This repo follows the folder structure specified in [golang-standards/project-la
 
 ### EDH API Specs
 
-[v1.1.1](https://public.cloud.myinfo.gov.sg/edh/edh-tuo-specs.html)
+[v1.1.2](https://public.cloud.myinfo.gov.sg/edh/edh-tuo-specs.html)
 
 ### Keys and Certs
 
