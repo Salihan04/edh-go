@@ -8,11 +8,11 @@ import (
 
 // Config is a struct that will get its values from configs/config.json
 type Config struct {
-	AppClientID    string `json:"app_client_id"`
-	PrivateKeyPath string `json:"private_key_path"`
-	PublicCertPath string `json:"public_cert_path"`
-	BaseURL        string `json:"base_url"`
-	Attributes     string `json:"attributes"`
+	AppClientID    string `json:"app_client_id,omitempty"`
+	PrivateKeyPath string `json:"private_key_path,omitempty"`
+	PublicCertPath string `json:"public_cert_path,omitempty"`
+	BaseURL        string `json:"base_url,omitempty"`
+	Attributes     string `json:"attributes,omitempty"`
 }
 
 // GetConfig returns the JSON object in configs/config.json as a Config struct
