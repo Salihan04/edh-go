@@ -21,12 +21,12 @@ func GetConfig(filename string) (Config, error) {
 
 	byteValue, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return config, errors.New("Unable to open config.json")
+		return config, errors.New("unable to open config.json")
 	}
 
 	err = json.Unmarshal(byteValue, &config)
 	if err != nil {
-		return config, errors.New("Unable to unmarshal byteValue to Config struct")
+		return config, errors.New("unable to unmarshal byteValue to Config struct")
 	}
 
 	return config, nil
