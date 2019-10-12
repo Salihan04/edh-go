@@ -29,18 +29,18 @@ func TestGetConfig(t *testing.T) {
 			if tc.name == "Valid" {
 				got, _ := GetConfig(tc.filename)
 				if !reflect.DeepEqual(got, expected) {
-					t.Errorf("Got %v, expected %v", got, expected)
+					t.Errorf("got %v, expected %v", got, expected)
 				}
 			} else if tc.name == "MissingFields" {
 				got, _ := GetConfig(tc.filename)
 				t.Logf("%v, %v\n", got, expected)
 				if reflect.DeepEqual(got, expected) {
-					t.Errorf("There are missing config fields. Got %v, expected %v", got, expected)
+					t.Errorf("there are missing config fields. Got %v, expected %v", got, expected)
 				}
 			} else {
 				_, err := GetConfig(tc.filename)
 				if err == nil {
-					t.Errorf("Expected error to be returned\n")
+					t.Errorf("expected error to be returned\n")
 				}
 			}
 		})
