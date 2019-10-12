@@ -11,30 +11,29 @@ func TestGetConfig(t *testing.T) {
 		filename string
 	}{
 		{"NotExist", "notExist.json"},
-		{"Valid", "../../configs/config.json"},
+		{"Valid", "./test_files/valid.json"},
 		{"MissingFields", "./test_files/missing_fields.json"},
 		{"InvalidFormat", "./test_files/invalid.json"},
 	}
 
-	expected := getConfigFields(Config{
+	expected := Config{
 		AppClientID:    "app_client_id",
 		PrivateKeyPath: "private_key_path",
 		PublicCertPath: "public_cert_path",
 		BaseURL:        "base_url",
 		Attributes:     "attributes",
-	})
+	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.name == "Valid" {
-				c, _ := GetConfig(tc.filename)
-				got := getConfigFields(c)
+				got, _ := GetConfig(tc.filename)
 				if !reflect.DeepEqual(got, expected) {
 					t.Errorf("Got %v, expected %v", got, expected)
 				}
 			} else if tc.name == "MissingFields" {
-				c, _ := GetConfig(tc.filename)
-				got := getConfigFields(c)
+				got, _ := GetConfig(tc.filename)
+				t.Logf("%v, %v\n", got, expected)
 				if reflect.DeepEqual(got, expected) {
 					t.Errorf("There are missing config fields. Got %v, expected %v", got, expected)
 				}
@@ -46,18 +45,4 @@ func TestGetConfig(t *testing.T) {
 			}
 		})
 	}
-}
-
-func getConfigFields(c Config) []string {
-	var fields []string
-	e := reflect.ValueOf(&c).Elem()
-
-	for i := 0; i < e.NumField(); i++ {
-		// Only append fields with non-empty values
-		if e.Field(i).Interface() != "" {
-			fields = append(fields, e.Type().Field(i).Name)
-		}
-	}
-
-	return fields
 }
