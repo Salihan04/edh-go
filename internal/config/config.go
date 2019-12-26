@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 )
 
 // Config is a struct that will get its values from configs/config.json
@@ -28,6 +31,14 @@ func GetConfig(filename string) (Config, error) {
 	if err != nil {
 		return config, errors.New("unable to unmarshal byteValue to Config struct")
 	}
+
+	// Modify config PrivateKeyPath and PublicCertPath to be absolute paths
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	config.PrivateKeyPath = filepath.Join(dir, "configs", config.PrivateKeyPath)
+	config.PublicCertPath = filepath.Join(dir, "configs", config.PublicCertPath)
 
 	return config, nil
 }

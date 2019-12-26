@@ -1,6 +1,9 @@
 package config
 
 import (
+	"log"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -16,10 +19,14 @@ func TestGetConfig(t *testing.T) {
 		{"InvalidFormat", "./test_files/invalid.json"},
 	}
 
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
 	expected := Config{
 		AppClientID:    "app_client_id",
-		PrivateKeyPath: "private_key_path",
-		PublicCertPath: "public_cert_path",
+		PrivateKeyPath: filepath.Join(dir, "configs", "private_key_path"),
+		PublicCertPath: filepath.Join(dir, "configs", "public_cert_path"),
 		BaseURL:        "base_url",
 		Attributes:     "attributes",
 	}
