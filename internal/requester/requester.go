@@ -24,11 +24,11 @@ func init() {
 	attributes = c.Attributes
 	txnNo = time.Now().Unix()
 	timestamp = time.Now().Unix() * 1000
+
+	// TODO: initialize nonce
 }
 
-func formulateBaseString(httpMethod string, url string, appID string,
-	attributes string, clientID string, nonce string,
-	timestamp int64, txnNo int64) string {
+func formulateBaseString(httpMethod string, url string, nonce string) string {
 	baseParams := map[string]string{
 		"app_id":           appID,
 		"attributes":       attributes,
