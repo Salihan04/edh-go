@@ -81,3 +81,29 @@ func TestFormulateBaseString(t *testing.T) {
 		})
 	}
 }
+
+func TestFormulateURLWithQueryString(t *testing.T) {
+	testCases := []struct {
+		name     string
+		url      string
+		expected string
+	}{
+		{
+			"Valid",
+			"https://test.api.edh.gov.sg/gov/v1/entity/201800001A",
+			"https://test.api.edh.gov.sg/gov/v1/entity/201800001A?" +
+				"attributes=" + attributes + "&" +
+				"client_id=STG2-EDH-SELF-TEST&" +
+				"txnNo=" + strconv.FormatInt(txnNo, 10),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := formulateURLWithQueryString(tc.url)
+			if got != tc.expected {
+				t.Errorf("got %v, expected %v", got, tc.expected)
+			}
+		})
+	}
+}

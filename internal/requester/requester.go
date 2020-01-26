@@ -1,11 +1,30 @@
 package requester
 
 import (
+	"edh-go/internal/config"
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
+
+var appID, clientID, attributes string
+var txnNo, timestamp int64
+
+func init() {
+	c, err := config.GetConfig("../../configs/config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	appID = c.AppClientID
+	clientID = c.AppClientID
+	attributes = c.Attributes
+	txnNo = time.Now().Unix()
+	timestamp = time.Now().Unix() * 1000
+}
 
 func formulateBaseString(httpMethod string, url string, appID string,
 	attributes string, clientID string, nonce string,
@@ -32,4 +51,8 @@ func formulateBaseString(httpMethod string, url string, appID string,
 	}
 
 	return baseString
+}
+
+func formulateURLWithQueryString(url string) string {
+	return fmt.Sprintf("%v?attributes=%v&client_id=%v&txnNo=%v", url, attributes, clientID, txnNo)
 }
