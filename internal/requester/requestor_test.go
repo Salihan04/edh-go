@@ -1,46 +1,60 @@
 package requester
 
 import (
+	"edh-go/internal/config"
 	"reflect"
 	"strconv"
 	"strings"
 	"testing"
 )
 
+var testConfig config.Config
+var testParams fixedParams
+
+func init() {
+	testConfig = config.Config{
+		AppClientID:    "STG2-EDH-SELF-TEST",
+		PrivateKeyPath: "",
+		PublicCertPath: "",
+		BaseURL:        "https://test.api.edh.gov.sg/gov/v1/entity",
+		Attributes:     "basic-profile,addresses",
+	}
+
+	testParams = fixedParams{
+		url:       "https://test.api.edh.gov.sg/gov/v1/entity/201800001A",
+		nonce:     "1234567890abcde",
+		txnNo:     123,
+		timestamp: 123,
+	}
+}
+
 func TestFormulateBaseString(t *testing.T) {
 	testCases := []struct {
 		name       string
 		httpMethod string
-		url        string
-		appID      string
-		attributes string
-		clientID   string
-		nonce      string
-		timestamp  int64
-		txnNo      int64
+		p          fixedParams
+		c          config.Config
 		expected   string
 	}{
 		{
 			"Valid",
 			"Get",
-			"https://test.api.edh.gov.sg/gov/v1/entity/201800001A",
-			"STG2-EDH-SELF-TEST",
-			"basic-profile,addresses",
-			"STG2-EDH-SELF-TEST",
-			"1234567890abcde",
-			123,
-			123,
+			testParams,
+			testConfig,
 			"GET&https://test.api.edh.gov.sg/gov/v1/entity/201800001A&" +
-				"app_id=STG2-EDH-SELF-TEST&attributes=basic-profile,addresses&client_id=STG2-EDH-SELF-TEST&" +
-				"nonce=1234567890abcde&signature_method=RS256&timestamp=123&txn_no=123",
+				"app_id=STG2-EDH-SELF-TEST&" +
+				"attributes=basic-profile,addresses&" +
+				"client_id=STG2-EDH-SELF-TEST&" +
+				"nonce=1234567890abcde&" +
+				"signature_method=RS256&" +
+				"timestamp=123&" +
+				"txn_no=123",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := formulateBaseString(tc.httpMethod, tc.url, tc.appID,
-				tc.attributes, tc.clientID, tc.nonce,
-				tc.timestamp, tc.txnNo)
+			got := formulateBaseString(tc.httpMethod, testParams, testConfig)
 			baseStringParts := strings.Split(got, "&")
 
 			httpMethod := baseStringParts[0]
@@ -85,22 +99,24 @@ func TestFormulateBaseString(t *testing.T) {
 func TestFormulateURLWithQueryString(t *testing.T) {
 	testCases := []struct {
 		name     string
-		url      string
+		p        fixedParams
+		c        config.Config
 		expected string
 	}{
 		{
 			"Valid",
-			"https://test.api.edh.gov.sg/gov/v1/entity/201800001A",
+			testParams,
+			testConfig,
 			"https://test.api.edh.gov.sg/gov/v1/entity/201800001A?" +
-				"attributes=" + attributes + "&" +
+				"attributes=basic-profile,addresses&" +
 				"client_id=STG2-EDH-SELF-TEST&" +
-				"txnNo=" + strconv.FormatInt(txnNo, 10),
+				"txnNo=123",
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := formulateURLWithQueryString(tc.url)
+			got := formulateURLWithQueryString(testParams, testConfig)
 			if got != tc.expected {
 				t.Errorf("got %v, expected %v", got, tc.expected)
 			}

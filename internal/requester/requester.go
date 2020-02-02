@@ -10,33 +10,40 @@ import (
 	"time"
 )
 
-var appID, clientID, attributes string
-var txnNo, timestamp int64
+type fixedParams struct {
+	url       string
+	nonce     string
+	txnNo     int64
+	timestamp int64
+}
+
+var c config.Config
+var p fixedParams
 
 func init() {
-	c, err := config.GetConfig("../../configs/config.json")
+	var err error
+	c, err = config.GetConfig("../../configs/config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	appID = c.AppClientID
-	clientID = c.AppClientID
-	attributes = c.Attributes
-	txnNo = time.Now().Unix()
-	timestamp = time.Now().Unix() * 1000
+	p = fixedParams{
+		url:       c.BaseURL, //TODO: set to new value when UEN is available
+		nonce:     "",        //TODO: call a function to generate nonce
+		txnNo:     time.Now().Unix(),
+		timestamp: time.Now().Unix() * 1000,
+	}
 }
 
-func formulateBaseString(httpMethod string, url string, appID string,
-	attributes string, clientID string, nonce string,
-	timestamp int64, txnNo int64) string {
+func formulateBaseString(httpMethod string, p fixedParams, c config.Config) string {
 	baseParams := map[string]string{
-		"app_id":           appID,
-		"attributes":       attributes,
-		"client_id":        clientID,
-		"nonce":            nonce,
+		"app_id":           c.AppClientID,
+		"attributes":       c.Attributes,
+		"client_id":        c.AppClientID,
+		"nonce":            p.nonce,
 		"signature_method": "RS256",
-		"timestamp":        strconv.FormatInt(timestamp, 10),
-		"txn_no":           strconv.FormatInt(txnNo, 10),
+		"timestamp":        strconv.FormatInt(p.timestamp, 10),
+		"txn_no":           strconv.FormatInt(p.txnNo, 10),
 	}
 	var keys []string
 
@@ -45,7 +52,7 @@ func formulateBaseString(httpMethod string, url string, appID string,
 	}
 	sort.Strings(keys)
 
-	baseString := fmt.Sprintf("%v&%v", strings.ToUpper(httpMethod), url)
+	baseString := fmt.Sprintf("%v&%v", strings.ToUpper(httpMethod), p.url)
 	for _, k := range keys {
 		baseString += fmt.Sprintf("&%v=%v", k, baseParams[k])
 	}
@@ -53,6 +60,6 @@ func formulateBaseString(httpMethod string, url string, appID string,
 	return baseString
 }
 
-func formulateURLWithQueryString(url string) string {
-	return fmt.Sprintf("%v?attributes=%v&client_id=%v&txnNo=%v", url, attributes, clientID, txnNo)
+func formulateURLWithQueryString(p fixedParams, c config.Config) string {
+	return fmt.Sprintf("%v?attributes=%v&client_id=%v&txnNo=%v", p.url, c.Attributes, c.AppClientID, p.txnNo)
 }
