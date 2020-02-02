@@ -41,3 +41,7 @@ $ gotest -v -coverprofile=cover.out
 # Show coverage report in browser
 $ go tool cover -html=cover.out
 ```
+
+#### Committing go.mod file
+
+Before you commit the **go.mod** file, please run `go mod tidy` first
